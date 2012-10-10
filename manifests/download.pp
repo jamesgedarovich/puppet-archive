@@ -50,12 +50,12 @@ define archive::download (
   $allow_insecure = false) {
 
   $cookie_arg = $cookie ? { 
-    /(.*)/    => "-b \"$1\""
+    /(.*)/    => "-b \"$1\"",
     default => ""
   }
 
   $agent_arg = $agent ? {
-    /(.*)/    => "--user-agent \"$1\""
+    /(.*)/    => "--user-agent \"$1\"",
     default => ""  
   }
 
