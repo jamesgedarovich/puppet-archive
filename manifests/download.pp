@@ -86,7 +86,6 @@ define archive::download (
       if $digest_url != "" and $digest_content != "" {
         fail "digest_url and digest_content should not be used together !"
       }
-            notice("Curl command: curl -v ${cookie_arg} ${agent_arg} -L -O ${insecure_arg} -o ${src_target}/${name}.${digest_type} ${digest_src}")
     
       if $digest_content == "" {
     
@@ -99,7 +98,7 @@ define archive::download (
               $digest_src = $digest_url
             }
             exec {"download digest of archive $name":
-              command => "curl -v ${cookie_arg} ${agent_arg} -L -O ${insecure_arg} -o ${src_target}/${name}.${digest_type} ${digest_src}",
+              command => "curl ${cookie_arg} ${agent_arg} -L ${insecure_arg} -o ${src_target}/${name}.${digest_type} ${digest_src}",
               creates => "${src_target}/${name}.${digest_type}",
               timeout => $timeout,
               notify  => Exec["download archive $name and check sum"],
@@ -142,9 +141,8 @@ define archive::download (
  
   case $ensure {
     present: {
-      notice("Curl command: curl -v ${cookie_arg} ${agent_arg} -L -O ${insecure_arg} -o ${src_target}/${name} ${url}")
       exec {"download archive $name and check sum":
-        command   => "curl -v ${cookie_arg} ${agent_arg} -L -O ${insecure_arg} -o ${src_target}/${name} ${url}",
+        command   => "curl ${cookie_arg} ${agent_arg} -L ${insecure_arg} -o ${src_target}/${name} ${url}",
         creates   => "${src_target}/${name}",
         logoutput => true,
         timeout   => $timeout,
