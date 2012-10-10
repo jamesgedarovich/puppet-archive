@@ -70,6 +70,10 @@ define archive::download (
     }
   }
 
+  Exec {
+    path => "/home/vagrant/.rvm/gems/ruby-1.9.3-p194/bin:/home/vagrant/.rvm/gems/ruby-1.9.3-p194@global/bin:/home/vagrant/.rvm/rubies/ruby-1.9.3-p194/bin:/home/vagrant/.rvm/bin:/usr/lib64/ccache:/usr/local/bin:/bin:/usr/bin:/usr/local/sbin:/usr/sbin:/sbin:/home/vagrant/.rvm/bin:/sbin:/usr/sbin:/home/vagrant/.local/bin:/home/vagrant/bin"
+  }
+
   case $checksum {
     true : {
       case $digest_type {
@@ -155,7 +159,7 @@ define archive::download (
       }
 
       exec {"rm-on-error-${name}":
-        command     => "rm -f ${src_target}/${name} ${src_target}/${name}.${digest_type}",
+        command     => "rm -f ${src_target}/${name} ${src_target}/${name}.${digest_type} && exit 1",
         unless      => $checksum_cmd,
         cwd         => $src_target,
         refreshonly => true,
