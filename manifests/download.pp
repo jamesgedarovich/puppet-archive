@@ -155,7 +155,7 @@ define archive::download (
       }
 
       exec {"rm-on-error-${name}":
-        command     => "rm -f ${src_target}/${name} ${src_target}/${name}.${digest_type} && exit 1",
+        command     => "rm -f ${src_target}/${name} ${src_target}/${name}.${digest_type}",
         unless      => $checksum_cmd,
         cwd         => $src_target,
         refreshonly => true,
