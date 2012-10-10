@@ -26,18 +26,38 @@ Example usage:
     digest_string => "f9eafa9bfd620324d1270ae8f09a8c89",
     url => "http://archive.apache.org/dist/tomcat/tomcat-6/v6.0.26/bin/apache-tomcat-6.0.26.tar.gz",
   }
+
+  archive::download { "jdk-7u7-linux-i586.tar.gz":
+    ensure        => present,
+    url           => "http://download.oracle.com/otn-pub/java/jdk/7u7-b10/jdk-7u7-linux-i586.tar.gz",
+    agent         => "Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.9.1.16) Gecko/20120421 Firefox/11.0",
+    cookie        => "Cookie: gpw_e24=http%3A%2F%2Fwww.oracle.com%2F",
+    checksum      => false,
+  }
    
 */
 define archive::download (
-  $ensure=present, 
+  $ensure         = present, 
   $url, 
-  $checksum=true,
-  $digest_url="",
-  $digest_string="",
-  $digest_type="md5",
-  $timeout=120,
-  $src_target="/usr/src",
-  $allow_insecure=false) {
+  $checksum       = true,
+  $digest_url     = "",
+  $digest_string  = "",
+  $digest_type    = "md5",
+  $cookie,
+  $agent,
+  $timeout        = 120,
+  $src_target     = "/usr/src",
+  $allow_insecure = false) {
+
+  $cookie_arg = $cookie ? { 
+    /(.*)/    => "-b \"$1\""
+    default => ""
+  }
+
+  $agent_arg = $agent ? {
+    /(.*)/    => "--user-agent \"$1\""
+    default => ""  
+  }
 
   $insecure_arg = $allow_insecure ? {
     true => "-k",
@@ -75,7 +95,7 @@ define archive::download (
             }
     
             exec {"download digest of archive $name":
-              command => "curl ${insecure_arg} -o ${src_target}/${name}.${digest_type} ${digest_src}",
+              command => "curl ${cookie_arg} ${agent_arg} ${insecure_arg} -o ${src_target}/${name}.${digest_type} ${digest_src}",
               creates => "${src_target}/${name}.${digest_type}",
               timeout => $timeout,
               notify  => Exec["download archive $name and check sum"],
@@ -119,7 +139,7 @@ define archive::download (
   case $ensure {
     present: {
       exec {"download archive $name and check sum":
-        command   => "curl ${insecure_arg} -o ${src_target}/${name} ${url}",
+        command   => "curl ${cookie_arg} ${agent_arg} ${insecure_arg} -o ${src_target}/${name} ${url}",
         creates   => "${src_target}/${name}",
         logoutput => true,
         timeout   => $timeout,
