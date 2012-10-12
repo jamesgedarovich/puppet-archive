@@ -43,8 +43,8 @@ define archive::download (
   $digest_url     = "",
   $digest_string  = "",
   $digest_type    = "md5",
-  $cookie,
-  $agent,
+  $cookie         = "",
+  $agent          = "",
   $timeout        = 120,
   $src_target     = "/usr/src",
   $allow_insecure = false) {
